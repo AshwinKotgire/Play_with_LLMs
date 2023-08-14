@@ -1,3 +1,5 @@
+# %%writefile Cust_chain.py
+
 from langchain import HuggingFacePipeline
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -43,9 +45,17 @@ class Cust_Chain_obj():
         """
     prompt_t=PromptTemplate(input_variables=['context','question'],template=prompt)
     return prompt_t
+  def get_device(self):
+    if torch.cuda.is_available():
+      print('cuda')
+      device = torch.device("cuda")  # If GPU is available, use it.
+    else:
+      device = torch.device("cpu")   # If GPU is not available, use the CPU.
+    return device  
+
 
   def load_pdf_doc(self,doc_path):
-    loader=PyPDFLoader(urls)
+    loader=PyPDFLoader(doc_path)
     data=loader.load()
     self.doc=data
     return self.doc
@@ -86,13 +96,13 @@ class Cust_Chain_obj():
         cc+='\n'
       if(len(cc)!=0  ):
         context=cc
-      context+=cust_context  
+      context+=cust_context
     return context,meta_datas
-  
+
   def run(self,query,k=2,use_contexts_from_doc=False,cust_context=''):
     context,metadata=self.retrieve_contexts(query,k,use_contexts_from_doc,cust_context)
     prompt=self.prompt_template.format(context=context,question=query)
-    inputs = self.tokenizer(prompt, return_tensors="pt",padding =True).to(device)
+    inputs = self.tokenizer(prompt, return_tensors="pt",padding =True).to(self.get_device())
     generate_ids = self.model.generate(inputs.input_ids, max_length=4000,top_k=1,top_p=0.5,temperature=0.01)
     p=generate_ids[0][inputs['input_ids'].shape[1]:]
     output=self.tokenizer.decode(p, skip_special_tokens=True, clean_up_tokenization_spaces=True)
