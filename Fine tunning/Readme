@@ -1,0 +1,7 @@
+Readme :
+The following are the list of resources used while creating these notebooks:
+1. https://huggingface.co/datasets/Salesforce/dialogstudio
+2. https://huggingface.co/meta-llama/Llama-2-7b-hf
+3. https://learn.deeplearning.ai/finetuning-large-language-models/lesson/3/where-finetuning-fits-in
+
+To prevent repeated generation of same token until number of generated tokens is exhausted is to create a stopping criteria as mentioned in https://youtu.be/6iHVJyX2e50?si=KuFu0oNQ_TezM9yd
